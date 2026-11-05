@@ -1,0 +1,9 @@
+.DS_Store
+*.wav
+*.mp3
+*.mp4
+*.mov
+*.flac
+*.aac
+node_modules/
+.env*
