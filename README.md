@@ -13,7 +13,7 @@ Open-source, local-first cue editor for synchronizing **lyrics, narration, dialo
 
 ## Run in VS Code
 1. Unzip or clone this repository and open the folder in VS Code.
-2. Open `index.html` in a browser, or use the **Live Server** VS Code extension.
+2. Serve the folder over HTTP (opening `index.html` by double-click does not work, because transcription runs in a Web Worker): use the **Live Server** VS Code extension, or the command below.
 3. Load an audio file and paste your lyrics. Press **M** as each line starts.
 4. Export JSON regularly to back up or share your work.
 
@@ -42,7 +42,7 @@ Audio and video are loaded with a browser object URL and are **not uploaded**. T
 ## Limitations / roadmap
 Transcription runs in the browser, so long audio is slow and the Tiny/Base/Small models trade speed for accuracy. Subtitle end times fall back to the next line's start, or +3 seconds. Images are not included in JSON exports.
 
-Roadmap: forced alignment for lyrics you already have, an MCP server for AI clients, n8n workflows, and waveform display.
+Roadmap: a Web Worker so the page stays responsive during transcription, n8n workflows, and waveform display. The MCP server for AI clients is available in [`mcp/`](mcp/README.md).
 
 ## License
 MIT — see `LICENSE`.

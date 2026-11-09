@@ -72,17 +72,17 @@ test('cleanCues borra frases vacías y placeholders sin marcar', () => {
 });
 
 test('cleanText quita etiquetas de Whisper como [Music]', () => {
-  assert.equal(C.cleanText('[Music] I build what I manage [Applause]'), 'I build what I manage');
+  assert.equal(C.cleanText('[Music] the quick brown fox jumps [Applause]'), 'the quick brown fox jumps');
 });
 
 test('dedupeCues descarta la frase repetida por solape de bloques', () => {
   const out = C.dedupeCues([
-    { text: 'Strategy and code on the very same team', start: 1 },
-    { text: 'Strategy and code', start: 2 },
-    { text: 'On the very same team', start: 3 },
-    { text: 'Let us ship it', start: 4 },
+    { text: 'alpha beta gamma delta epsilon', start: 1 },
+    { text: 'alpha beta gamma', start: 2 },
+    { text: 'gamma delta epsilon', start: 3 },
+    { text: 'over the lazy dog', start: 4 },
   ]);
-  assert.deepEqual(out.map(c => c.text), ['Strategy and code on the very same team', 'Let us ship it']);
+  assert.deepEqual(out.map(c => c.text), ['alpha beta gamma delta epsilon', 'over the lazy dog']);
 });
 
 test('dedupeCues no descarta frases cortas como "Well"', () => {
@@ -96,21 +96,21 @@ test('dedupeCues no descarta frases cortas como "Well"', () => {
 test('cuesFromChunks aplica la limpieza completa', () => {
   const cues = C.cuesFromChunks([
     { timestamp: [0, 2], text: '[Music]' },
-    { timestamp: [2, 4], text: 'I build what I manage' },
-    { timestamp: [4, 6], text: 'I build what I manage' },
-    { timestamp: [6, 8], text: 'Let us make something that matters' },
+    { timestamp: [2, 4], text: 'the quick brown fox jumps' },
+    { timestamp: [4, 6], text: 'the quick brown fox jumps' },
+    { timestamp: [6, 8], text: 'one more generic sentence here' },
   ]);
-  assert.deepEqual(cues.map(c => c.text), ['I build what I manage', 'Let us make something that matters']);
+  assert.deepEqual(cues.map(c => c.text), ['the quick brown fox jumps', 'one more generic sentence here']);
 });
 
 // Palabras simuladas de Whisper: una palabra por elemento con su tiempo
 const w = (text, start) => ({ text, start, end: start + 0.4 });
 
 test('alignLyrics asigna inicio y fin de cada línea a partir de las palabras', () => {
-  const lines = ['I build what I manage', 'Let us ship it'];
+  const lines = ['the quick brown fox jumps', 'over the lazy dog'];
   const words = [
-    w(' I', 1), w(' build', 1.5), w(' what', 2), w(' I', 2.5), w(' manage', 3),
-    w(' Let', 5), w(' us', 5.4), w(' ship', 5.8), w(' it', 6.2),
+    w(' the', 1), w(' quick', 1.5), w(' brown', 2), w(' fox', 2.5), w(' jumps', 3),
+    w(' over', 5), w(' the', 5.4), w(' lazy', 5.8), w(' dog', 6.2),
   ];
   const r = C.alignLyrics(lines, words);
   assert.equal(r.matchedLines, 2);
@@ -139,6 +139,6 @@ test('alignLyrics estima las líneas que no aparecen entre sus vecinas', () => {
 
 test('cleanText quita (upbeat music) y notas ♪ pero conserva paréntesis de letra', () => {
   assert.equal(C.cleanText('(upbeat music)'), '');
-  assert.equal(C.cleanText('Human in the loop, ♪ Always another hackathon ♪'), 'Human in the loop, Always another hackathon');
+  assert.equal(C.cleanText('Sample line, ♪ another generic song line ♪'), 'Sample line, another generic song line');
   assert.equal(C.cleanText('Oops (yeah, you know) right'), 'Oops (yeah, you know) right');
 });
