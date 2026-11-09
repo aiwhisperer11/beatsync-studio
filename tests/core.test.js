@@ -102,3 +102,43 @@ test('cuesFromChunks aplica la limpieza completa', () => {
   ]);
   assert.deepEqual(cues.map(c => c.text), ['I build what I manage', 'Let us make something that matters']);
 });
+
+// Palabras simuladas de Whisper: una palabra por elemento con su tiempo
+const w = (text, start) => ({ text, start, end: start + 0.4 });
+
+test('alignLyrics asigna inicio y fin de cada línea a partir de las palabras', () => {
+  const lines = ['I build what I manage', 'Let us ship it'];
+  const words = [
+    w(' I', 1), w(' build', 1.5), w(' what', 2), w(' I', 2.5), w(' manage', 3),
+    w(' Let', 5), w(' us', 5.4), w(' ship', 5.8), w(' it', 6.2),
+  ];
+  const r = C.alignLyrics(lines, words);
+  assert.equal(r.matchedLines, 2);
+  assert.equal(r.estimated, 0);
+  assert.equal(r.cues[0].start, 1);
+  assert.equal(r.cues[0].end, 3.4);
+  assert.equal(r.cues[1].start, 5);
+  assert.equal(r.cues[1].confidence, 1);
+});
+
+test('alignLyrics ignora mayúsculas y acentos al comparar', () => {
+  const r = C.alignLyrics(['Canción bonita'], [w(' cancion', 2), w(' BONITA', 2.5)]);
+  assert.equal(r.matchedLines, 1);
+  assert.equal(r.cues[0].start, 2);
+});
+
+test('alignLyrics estima las líneas que no aparecen entre sus vecinas', () => {
+  const lines = ['first line here', 'this one is missing', 'last line here'];
+  const words = [w(' first', 1), w(' line', 1.5), w(' here', 2), w(' last', 9), w(' line', 9.5), w(' here', 10)];
+  const r = C.alignLyrics(lines, words);
+  assert.equal(r.matchedLines, 2);
+  assert.equal(r.estimated, 1);
+  assert.equal(r.cues[1].confidence, 0);
+  assert.ok(r.cues[1].start >= 2 && r.cues[1].end <= 9);
+});
+
+test('cleanText quita (upbeat music) y notas ♪ pero conserva paréntesis de letra', () => {
+  assert.equal(C.cleanText('(upbeat music)'), '');
+  assert.equal(C.cleanText('Human in the loop, ♪ Always another hackathon ♪'), 'Human in the loop, Always another hackathon');
+  assert.equal(C.cleanText('Oops (yeah, you know) right'), 'Oops (yeah, you know) right');
+});

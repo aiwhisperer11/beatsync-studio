@@ -57,9 +57,9 @@
         </label>
         <label>Idioma del audio
           <select id="langSelect">
-            <option value="spanish" selected>Español</option>
+            <option value="auto" selected>Detectar automáticamente</option>
+            <option value="spanish">Español</option>
             <option value="english">English</option>
-            <option value="auto">Detectar automáticamente</option>
           </select>
         </label>
       </div>
@@ -73,6 +73,14 @@
         <textarea id="lyrics" rows="7" placeholder="Hi, I'm...&#10;I build what I manage!&#10;From data to decisions..."></textarea>
         <div class="actions below">
           <button id="loadLyrics" class="ghost">Crear filas desde texto</button>
+        </div>
+      </details>
+
+      <details class="manual" open>
+        <summary>Ya tengo la letra: alinearla con el audio</summary>
+        <p class="hint">Pega la letra en una línea por frase, carga el audio y pulsa alinear. Whisper busca cada palabra en el audio y asigna inicio y fin a cada línea. Las líneas que no encuentre se estiman entre sus vecinas: revísalas.</p>
+        <div class="actions below">
+          <button id="alignBtn">⇄ Alinear letra con el audio</button>
         </div>
       </details>
     </section>

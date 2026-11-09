@@ -245,6 +245,34 @@ $('loadLyrics').addEventListener('click', () => {
   notice(`${rows.length} frases creadas. Reproduce el audio y pulsa M al escuchar cada comienzo.`);
 });
 
+$('alignBtn').addEventListener('click', async () => {
+  if (!audioUrl) return notice('Primero carga un audio o video.');
+  const lines = parseLines($('lyrics').value);
+  if (!lines.length) return notice('Pega primero tu letra, una frase por línea.');
+  if (state.cues.length && !confirm('Esto reemplazará las frases y sus tiempos actuales. ¿Continuar?')) return;
+  const btn = $('alignBtn');
+  btn.disabled = true;
+  try {
+    const words = await BeatSyncTranscribe.transcribe(audioUrl, {
+      model: $('modelSelect').value,
+      language: $('langSelect').value,
+      words: true,
+      onStatus: notice,
+    });
+    const { cues, matchedLines, estimated } = BeatSyncCore.alignLyrics(lines, words);
+    if (!matchedLines) return notice('No encontré ninguna palabra de tu letra en el audio. Revisa el idioma o el modelo.');
+    state.cues = cues.map(c => makeCue(c.text, { start: c.start, end: c.end }));
+    state.selected = 0;
+    persist();
+    render();
+    notice(`Alineadas ${matchedLines} de ${lines.length} líneas. ${estimated} estimadas entre vecinas: revísalas en la tabla.`);
+  } catch (err) {
+    notice('No se pudo alinear: ' + err.message);
+  } finally {
+    btn.disabled = false;
+  }
+});
+
 $('projectName').addEventListener('input', e => { state.name = e.target.value; persist(); });
 $('markBtn').addEventListener('click', mark);
 $('prevBtn').addEventListener('click', () => choose(-1));

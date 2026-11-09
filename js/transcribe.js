@@ -27,11 +27,16 @@ const BeatSyncTranscribe = (() => {
   }
 
   // Devuelve chunks: [{ timestamp: [start, end], text }]
-  async function transcribe(audioUrl, { model = 'Xenova/whisper-base', language = 'auto', onStatus = () => {} } = {}) {
+  // words: true devuelve un chunk por palabra (necesario para alinear letra conocida)
+  async function transcribe(audioUrl, { model = 'Xenova/whisper-base', language = 'auto', words = false, onStatus = () => {} } = {}) {
     onStatus('Cargando modelo (la primera vez tarda más)…');
     const asr = await getPipeline(model, onStatus);
     onStatus('Transcribiendo en tu navegador. Puede tardar varios minutos con audios largos…');
-    const options = { return_timestamps: true, chunk_length_s: 30, stride_length_s: 5 };
+    const options = {
+      return_timestamps: words ? 'word' : true,
+      chunk_length_s: 30,
+      stride_length_s: 5,
+    };
     if (language !== 'auto') options.language = language; // 'spanish' | 'english'
     const result = await asr(audioUrl, options);
     return result.chunks ?? [];
