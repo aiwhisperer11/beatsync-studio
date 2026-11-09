@@ -3,12 +3,13 @@
 Open-source, local-first cue editor for synchronizing **lyrics, narration, dialogue and storyboard scenes** to an audio track.
 
 ## Features
-- Load a local audio file (MP3, WAV, etc.) — it never leaves your browser.
-- Paste lyrics or a script, one line per cue.
-- Play audio and press **M** to mark each line's start; automatically advances to the next line.
-- Edit timings and scene notes, jump between lines, autosave locally.
-- Export and import project **JSON**; export **CSV** and **SRT** subtitles.
-- No backend, no account, no external dependencies.
+- Load a local audio or video file (MP3, WAV, MP4, etc.) — it never leaves your browser.
+- **Transcribe from scratch** with Whisper running in the browser (Spanish, English or auto-detect), producing lines with start and end times.
+- Paste lyrics or a script manually, one line per cue, and mark timings with **M**.
+- Attach an image to each line, or capture the current video frame.
+- Edit timings, end times and scene notes, jump between lines, autosave locally.
+- Export and import project **JSON**; export **CSV**, **SRT** and **VTT** subtitles.
+- No backend, no account, no API keys, no cost per use.
 
 ## Run in VS Code
 1. Unzip or clone this repository and open the folder in VS Code.
@@ -28,7 +29,7 @@ Then visit http://localhost:8000.
 **Vercel / Netlify:** Import the GitHub repository as a static site. No build command or environment variables needed; publish the repository root.
 
 ## Privacy
-Audio is loaded with a browser object URL and is **not uploaded**. Project data (lyrics, timings and notes) is saved to your browser's `localStorage` and can be exported as JSON. The audio file itself is not included in JSON exports; load it again when reopening a project. Avoid including copyrighted music, private photos or confidential material in your public repository.
+Audio and video are loaded with a browser object URL and are **not uploaded**. Transcription runs locally with Whisper via [transformers.js](https://github.com/huggingface/transformers.js); the model files are downloaded once from Hugging Face and cached by the browser. Project data (lines, timings and notes) is saved to your browser's `localStorage`; images are stored in IndexedDB. Both can be exported as JSON for the project data only. The audio file and images are not included in JSON exports; load them again when reopening a project. Avoid including copyrighted music, private photos or confidential material in your public repository.
 
 ## Keyboard shortcuts
 | Key | Action |
@@ -39,7 +40,9 @@ Audio is loaded with a browser object URL and is **not uploaded**. Project data 
 | J | Jump to selected cue's marked time |
 
 ## Limitations / roadmap
-Timing is manual, not AI-transcribed. SRT end times are derived from the next cue start or 3 seconds for the last cue. Future improvements could include waveform display, audio scrubbing, automatic transcription, video preview, and drag-and-drop scene assets.
+Transcription runs in the browser, so long audio is slow and the Tiny/Base/Small models trade speed for accuracy. Subtitle end times fall back to the next line's start, or +3 seconds. Images are not included in JSON exports.
+
+Roadmap: forced alignment for lyrics you already have, an MCP server for AI clients, n8n workflows, and waveform display.
 
 ## License
 MIT — see `LICENSE`.

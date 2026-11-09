@@ -7,3 +7,4 @@
 *.aac
 node_modules/
 .env*
+*:Zone.Identifier
