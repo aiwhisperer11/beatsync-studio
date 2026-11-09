@@ -9,3 +9,4 @@ jobs:
         with:
           node-version: 20
       - run: node --test
+      - run: cd mcp && npm ci && npm run check

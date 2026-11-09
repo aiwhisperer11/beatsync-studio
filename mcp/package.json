@@ -8,7 +8,9 @@
     "beatsync-mcp": "server.js"
   },
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "check": "node e2e/client-check.mjs",
+    "test": "npm run check"
   },
   "license": "MIT",
   "engines": {
